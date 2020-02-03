@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name" translatable="false">LeonSocialLogin</string>
+    <string name="facebook_app_id" translatable="false">2538275819761758</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb2538275819761758</string>
+</resources>

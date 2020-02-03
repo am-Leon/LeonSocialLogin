@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name" translatable="false">LeonSocialLogin</string>
+
+    <!--facebook id -->
+    <string name="facebook_app_id" translatable="false">your facebook app id</string>
+    <string name="fb_login_protocol_scheme" translatable="false">your facebook login protocol schema</string>
+
+
+    <string name="base_url" translatable="false">northsweets.com</string>
+    <string name="http_base_url" translatable="false">https://northsweets.com/</string>
+
+    <string name="canceled_by_user">Canceled by user</string>
+    <string name="failed_authenticate_please">Failed to authenticate, Please try again</string>
+    <string name="install_twitter">Please Install Twitter App</string>
+</resources>

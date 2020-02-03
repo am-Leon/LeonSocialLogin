@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="canceled_by_user">تم الإلغاء بواسطة المستخدم</string>
+    <string name="failed_authenticate_please">مشكلة في التحقق , حاول مره اخري</string>
+    <string name="install_twitter">الرجاء تنزيل تطبيق تويتر</string>
+</resources>
