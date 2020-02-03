@@ -45,29 +45,19 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.core.models.User;
 
-import org.json.JSONException;
-
 import retrofit2.Call;
+
+import static am.leon.sociallogin.Params.FACEBOOK;
+import static am.leon.sociallogin.Params.FIELDS;
+import static am.leon.sociallogin.Params.GOOGLE;
+import static am.leon.sociallogin.Params.RC_SIGN_IN;
+import static am.leon.sociallogin.Params.SNAPCHAT;
+import static am.leon.sociallogin.Params.TWITTER;
 
 public class SocialLogin {
 
     private View view;
     private Context context;
-    private static final int FACEBOOK = 1;
-    private static final int TWITTER = 2;
-    private static final int GOOGLE = 3;
-    private static final int SNAPCHAT = 4;
-    private static final int RC_SIGN_IN = 0;
-    private static final String ID = "id";
-    private static final String NAME = "name";
-    private static final String BIRTHDAY = "birthday";
-    private static final String GENDER = "gender";
-    private static final String HOMETOWN = "hometown";
-    private static final String LINK = "link";
-    private static final String LOCATION = "location";
-    private static final String EMAIL = "email";
-    private static final String SOCIAL_LAST_N = "last_name";
-    private static final String SOCIAL_FIRST_N = "first_name";
 
     private SocialResponse model;
     private SocialLoginCallback loginCallback;
@@ -81,7 +71,7 @@ public class SocialLogin {
 
     private LoginStateController.OnLoginStateChangedListener mLoginStateChangedListener;
 
-    private MeData meData;
+    private MeData snapResult;
 
 
     public SocialLogin(Context context, SocialLoginCallback loginCallback) {
@@ -90,14 +80,74 @@ public class SocialLogin {
         this.model = new SocialResponse();
         this.loginCallback = loginCallback;
 
-        // for Facebook
+    }
+
+
+    //----------------------------------------- Facebook -------------------------------------------
+
+    private void facebookInit() {
         callbackManager = CallbackManager.Factory.create();
-        // for google
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
-        // for Twitter
+    }
+
+
+    public void facebookLogin() {
+        facebookInit();
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        getFacebookInfo(loginResult);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        failureMessage(context.getString(R.string.canceled_by_user));
+                    }
+
+                    @Override
+                    public void onError(FacebookException e) {
+                        System.out.println(e.getLocalizedMessage());
+                        failureMessage(context.getString(R.string.failed_authenticate_please));
+                    }
+                });
+        LoginManager.getInstance().logInWithReadPermissions((Activity) context, SocialGlobalConst.getInstance().getFaceBookPermissions());
+    }
+
+
+    private void getFacebookInfo(LoginResult result) {
+        GraphRequest request = GraphRequest.newMeRequest(result.getAccessToken(), ((object, response) -> {
+            FacebookResponseModel facebookResponse = new Gson().fromJson(response.getJSONObject().toString(), new TypeToken<FacebookResponseModel>() {
+            }.getType());
+
+            model.setSocialID(String.valueOf(facebookResponse.getId()));
+            model.setName(facebookResponse.getName());
+            model.setGender(facebookResponse.getGender());
+            model.setBirthday(facebookResponse.getBirthday());
+            model.setLink(facebookResponse.getLink());
+            model.setFirstName(facebookResponse.getFirst_name());
+            model.setLastName(facebookResponse.getLast_name());
+            model.setEmail(facebookResponse.getEmail());
+            model.setHometown(facebookResponse.getHometown());
+            model.setLocation(facebookResponse.getLocation());
+            model.setProfilePic(facebookResponse.getProfilePic());
+            model.setProviderType(FACEBOOK);
+
+            System.out.println(model.toString());
+
+            if (!model.getSocialID().isEmpty())
+                loginCallback.socialLoginResponse(model);
+        }));
+
+        Bundle parameters = new Bundle();
+        parameters.putString(FIELDS, SocialGlobalConst.getInstance().getFaceBookFields());
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
+
+
+    //----------------------------------------- Twitter --------------------------------------------
+
+    private void twitterInit() {
         TwitterConfig config = new TwitterConfig.Builder(context)
                 .logger(new DefaultLogger(Log.DEBUG))
                 .twitterAuthConfig(new TwitterAuthConfig(SocialGlobalConst.getInstance().getTwitter_CONSUMER_KEY(), SocialGlobalConst.getInstance().getTwitter_CONSUMER_SECRET()))
@@ -108,134 +158,28 @@ public class SocialLogin {
     }
 
 
-    public void facebookLogin() {
-        LoginManager.getInstance().registerCallback(callbackManager,
-                new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        getFacebookInfo(loginResult);
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        Snackbar.make(view, R.string.canceled_by_user, Snackbar.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onError(FacebookException e) {
-                        e.printStackTrace();
-                        System.out.println(e.getLocalizedMessage());
-                        Snackbar.make(view, R.string.failed_authenticate_please, Snackbar.LENGTH_SHORT).show();
-                    }
-                });
-        LoginManager.getInstance().logInWithReadPermissions((Activity) context, SocialGlobalConst.getInstance().getFaceBookPermissions());
-    }
-
-
-    private void getFacebookInfo(LoginResult result) {
-        GraphRequest request = GraphRequest.newMeRequest(result.getAccessToken(), ((object, response) -> {
-            try {
-                model.setSocialID(response.getJSONObject().getString(ID));
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_USER_ID " + e.getMessage());
-            }
-
-            try {
-                model.setName(response.getJSONObject().getString(NAME));
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_USER_ID " + e.getMessage());
-            }
-
-            try {
-                model.setGender(response.getJSONObject().getString(GENDER));
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_USER_ID " + e.getMessage());
-            }
-
-            try {
-                model.setBirthday(response.getJSONObject().getString(BIRTHDAY));
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_USER_BIRTHDAY " + e.getMessage());
-            }
-
-            try {
-                model.setLink(response.getJSONObject().getString(LINK));
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_USER_LINK " + e.getMessage());
-            }
-
-            try {
-                model.setFirstName(response.getJSONObject().getString(SOCIAL_FIRST_N));
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_FIRST_NAME" + e.getMessage());
-            }
-
-            try {
-                model.setLastName(response.getJSONObject().getString(SOCIAL_LAST_N));
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_LAST_NAME " + e.getMessage());
-            }
-
-            try {
-                model.setEmail(response.getJSONObject().getString(EMAIL));
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_USER_EMAIL " + e.getMessage());
-            }
-
-            try {
-                Location homeTown = new Gson().fromJson(response.getJSONObject().getJSONObject(HOMETOWN).toString(), new TypeToken<Location>() {
-                }.getType());
-                model.setHometown(homeTown);
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_USER_HOME_TOWN " + e.getMessage());
-            }
-
-            try {
-                Location location = new Gson().fromJson(response.getJSONObject().getJSONObject(LOCATION).toString(), new TypeToken<Location>() {
-                }.getType());
-                model.setLocation(location);
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_USER_LOCATION " + e.getMessage());
-            }
-
-            try {
-                model.setProfilePic("https://graph.facebook.com/" + response.getJSONObject().getString(ID) + "/picture?type=large");
-            } catch (JSONException e) {
-                System.out.println("SOCIAL_USER_LOCATION " + e.getMessage());
-            }
-
-            model.setProviderType(FACEBOOK);
-            System.out.println(model.toString());
-
-            if (!model.getSocialID().isEmpty())
-                loginCallback.socialLoginResponse(model);
-        }));
-
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", SocialGlobalConst.getInstance().getFaceBookFields());
-        request.setParameters(parameters);
-        request.executeAsync();
-    }
-
-
-    //login using Twitter
     public void twitterLogin() {
+        twitterInit();
         PackageManager pkManager = context.getPackageManager();
         try {
             PackageInfo pkgInfo = pkManager.getPackageInfo("com.twitter.android", 0);
             String getPkgInfo = pkgInfo.toString();
 
-            if (!getPkgInfo.equals("com.twitter.android")) {
+            if (!getPkgInfo.equals("com.twitter.android"))
                 checkTwitterSession();
-            }
+
         } catch (PackageManager.NameNotFoundException ignored) {
-            Snackbar.make(view, context.getString(R.string.install_twitter), Snackbar.LENGTH_SHORT).show();
+            failureMessage(context.getString(R.string.install_twitter));
         }
     }
 
 
-    private void checkTwitterSession() {
+    private TwitterSession getTwitterSession() {
+        return TwitterCore.getInstance().getSessionManager().getActiveSession();
+    }
 
+
+    private void checkTwitterSession() {
         if (getTwitterSession() == null) {
             twitterAuthClient.authorize((Activity) context, new Callback<TwitterSession>() {
                 @Override
@@ -246,13 +190,12 @@ public class SocialLogin {
 
                 @Override
                 public void failure(TwitterException e) {
-                    Snackbar.make(view, R.string.failed_authenticate_please, Snackbar.LENGTH_SHORT).show();
+                    failureMessage(context.getString(R.string.failed_authenticate_please));
                     e.printStackTrace();
                 }
             });
-        } else {
+        } else
             getTwitterData(getTwitterSession());
-        }
     }
 
 
@@ -271,9 +214,8 @@ public class SocialLogin {
                 model.setProfilePic(user.profileImageUrl);
                 model.setLink(user.url);
 
-                /*picture = user.profileImageUrlHttps.replace("_normal", "");
-                firstName = user.name;
-                lastName = user.screenName;*/
+                // TODO: 2/3/20 if we need another size of image
+                // picture = user.profileImageUrlHttps.replace("_normal", "");
 
                 try {
                     model.setFirstName(user.name.split(" ")[0]);
@@ -281,22 +223,15 @@ public class SocialLogin {
                     model.setName(user.screenName);
                 } catch (Exception e) {
                     model.setFirstName(user.name);
-                    model.setLastName("");
                 }
-
             }
 
             @Override
             public void failure(TwitterException exception) {
+                failureMessage(context.getString(R.string.failed_authenticate_please));
                 Log.e("Twitter", "Failed to get user data " + exception.getMessage());
             }
         });
-    }
-
-
-    public void googleLogin() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        ((Activity) context).startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
 
@@ -315,15 +250,50 @@ public class SocialLogin {
 //
 //            @Override
 //            public void failure(TwitterException exception) {
-//                Snackbar.make(view, R.string.failed_authenticate_please, Snackbar.LENGTH_SHORT).show();
+//                rbar.make(view, R.string.failed_authenticate_please, Snackbar.LENGTH_SHORT).show();
 //            }
 //        });
 //    }
 
 
-    private TwitterSession getTwitterSession() {
-        return TwitterCore.getInstance().getSessionManager().getActiveSession();
+    //----------------------------------------- Google ---------------------------------------------
+
+    private void googleInit() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
     }
+
+
+    public void googleLogin() {
+        googleInit();
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        ((Activity) context).startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+
+    private void handleGoogleResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            //Signed in successfully , show authenticated UI.
+            model.setSocialID(account.getId());
+            model.setProviderType(GOOGLE);
+            model.setFirstName(account.getDisplayName());
+            model.setLastName(account.getFamilyName());
+            model.setName(account.getGivenName());
+            model.setEmail(account.getEmail());
+            model.setProfilePic(account.getPhotoUrl().getPath());
+            model.setEmail(account.getEmail());
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCode class reference for more information.
+            Log.w("Tag", "sign InResult:failed code =" + e.getStatusCode());
+        }
+    }
+
+
+    //----------------------------------------- SnapChat -------------------------------------------
 
     public void snapChatLogin() {
         mLoginStateChangedListener =
@@ -351,6 +321,7 @@ public class SocialLogin {
 
     }
 
+
     private void getUserDetails() {
         boolean isUserLoggedIn = SnapLogin.isUserLoggedIn(context);
         if (isUserLoggedIn) {
@@ -366,8 +337,8 @@ public class SocialLogin {
                         return;
                     }
 
-                    meData = userDataResponse.getData().getMe();
-                    if (meData == null) {
+                    snapResult = userDataResponse.getData().getMe();
+                    if (snapResult == null) {
                         return;
                     }
 
@@ -379,8 +350,8 @@ public class SocialLogin {
                     model.setSocialID(userDataResponse.getData().getMe().getExternalId());
 
                     // not all users have a bitmoji connected, if the account has bitmoji connected we load the bitmoji avatar
-                    if (meData.getBitmojiData() != null) {
-                        model.setProfilePic(meData.getBitmojiData().getAvatar());
+                    if (snapResult.getBitmojiData() != null) {
+                        model.setProfilePic(snapResult.getBitmojiData().getAvatar());
                     }
                 }
 
@@ -393,6 +364,8 @@ public class SocialLogin {
         }
     }
 
+
+    //----------------------------------------- OnResult -------------------------------------------
 
     public void onResult(int requestCode, int resultCode, Intent data) {
         System.out.println("from onResult");
@@ -412,24 +385,6 @@ public class SocialLogin {
         }
     }
 
-    private void handleGoogleResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            //Signed in successfully , show authenticated UI.
-            model.setSocialID(account.getId());
-            model.setProviderType(GOOGLE);
-            model.setFirstName(account.getDisplayName());
-            model.setLastName(account.getFamilyName());
-            model.setName(account.getGivenName());
-            model.setEmail(account.getEmail());
-            model.setProfilePic(account.getPhotoUrl().getPath());
-            model.setEmail(account.getEmail());
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCode class reference for more information.
-            Log.w("Tag", "sign InResult:failed code =" + e.getStatusCode());
-        }
-    }
 
 //    private static Bitmap getFacebookProfilePicture(String picLink) {
 //        Bitmap bitmap = null;
@@ -448,6 +403,10 @@ public class SocialLogin {
 //        } else
 //            return null;
 //    }
+
+    private void failureMessage(String message) {
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+    }
 
 
     public interface SocialLoginCallback {
