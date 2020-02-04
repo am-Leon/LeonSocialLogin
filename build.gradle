@@ -20,9 +20,8 @@ allprojects {
         jcenter()
         maven { url 'https://maven.google.com' }
         maven { url 'https://maven.fabric.io/public' }
-        maven {
-            url "https://storage.googleapis.com/snap-kit-build/maven"
-        }
+        maven { url "https://storage.googleapis.com/snap-kit-build/maven" }
+
     }
 }
 
