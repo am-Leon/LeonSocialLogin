@@ -150,7 +150,7 @@ public class SocialLogin {
     private void twitterInit() {
         TwitterConfig config = new TwitterConfig.Builder(context)
                 .logger(new DefaultLogger(Log.DEBUG))
-                .twitterAuthConfig(new TwitterAuthConfig(SocialGlobalConst.getInstance().getTwitter_CONSUMER_KEY(), SocialGlobalConst.getInstance().getTwitter_CONSUMER_SECRET()))
+                .twitterAuthConfig(new TwitterAuthConfig(context.getString(R.string.twitter_CONSUMER_KEY), context.getString(R.string.twitter_CONSUMER_SECRET)))
                 .debug(false)
                 .build();
         Twitter.initialize(config);
@@ -224,6 +224,11 @@ public class SocialLogin {
                 } catch (Exception e) {
                     model.setFirstName(user.name);
                 }
+
+                System.out.println(model.toString());
+
+                if (!model.getSocialID().isEmpty())
+                    loginCallback.socialLoginResponse(model);
             }
 
             @Override

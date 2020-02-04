@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name" translatable="false">LeonSocialLogin</string>
-    <string name="facebook_app_id" translatable="false">2538275819761758</string>
-    <string name="fb_login_protocol_scheme" translatable="false">fb2538275819761758</string>
+
+    <string name="facebook_app_id" translatable="false">your_facebook_app_id</string>
+    <string name="fb_login_protocol_scheme" translatable="false">your_facebook_login_protocol_schema</string>
+
+    <string name="twitter_CONSUMER_KEY" translatable="false">your_twitter_consumer_key</string>
+    <string name="twitter_CONSUMER_SECRET" translatable="false">your_twitter_consumer_secret</string>
+
 </resources>

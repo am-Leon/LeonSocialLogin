@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements SocialLogin.Socia
 
         socialLogin_faceBook.setOnClickListener(v -> socialLogin.facebookLogin());
 
-        socialLogin_twitter.setOnClickListener(v -> socialLogin.snapChatLogin());
+        socialLogin_twitter.setOnClickListener(v -> socialLogin.twitterLogin());
 
     }
 
