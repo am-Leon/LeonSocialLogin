@@ -5,6 +5,9 @@ import java.util.List;
 
 public class SocialGlobalConst {
 
+    private String twitter_CONSUMER_KEY;
+    private String twitter_CONSUMER_SECRET;
+
     private String faceBookFields;
     private List<String> faceBookPermissions;
 
@@ -14,6 +17,21 @@ public class SocialGlobalConst {
         return instance;
     }
 
+    public String getTwitter_CONSUMER_KEY() {
+        return twitter_CONSUMER_KEY;
+    }
+
+    public void setTwitter_CONSUMER_KEY(String twitter_CONSUMER_KEY) {
+        this.twitter_CONSUMER_KEY = twitter_CONSUMER_KEY;
+    }
+
+    public String getTwitter_CONSUMER_SECRET() {
+        return twitter_CONSUMER_SECRET;
+    }
+
+    public void setTwitter_CONSUMER_SECRET(String twitter_CONSUMER_SECRET) {
+        this.twitter_CONSUMER_SECRET = twitter_CONSUMER_SECRET;
+    }
 
     public String getFaceBookFields() {
         if (faceBookFields.length() != 0)
