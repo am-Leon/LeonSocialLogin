@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="am.leon.sociallogin">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -46,15 +46,15 @@
         <!--            </intent-filter>-->
         <!--        </activity>-->
 
-        <meta-data
-            android:name="com.snapchat.kit.sdk.clientId"
-            android:value="8e833316-b476-49b0-b137-b79b8836280c" />
+        <!--        <meta-data-->
+        <!--            android:name="com.snapchat.kit.sdk.clientId"-->
+        <!--            android:value="8e833316-b476-49b0-b137-b79b8836280c" />-->
         <!--        <meta-data-->
         <!--            android:name="com.snapchat.kit.sdk.redirectUrl"-->
         <!--            android:value="00LFGF9nQKDp14NRcB9WOz1SZtaO7-gYHLgWCyivnIM" />-->
-        <meta-data
-            android:name="com.snapchat.kit.sdk.scopes"
-            android:resource="@array/snap_connect_scopes" />
+        <!--        <meta-data-->
+        <!--            android:name="com.snapchat.kit.sdk.scopes"-->
+        <!--            android:resource="@array/snap_connect_scopes" />-->
 
     </application>
 

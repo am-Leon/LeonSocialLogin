@@ -1,4 +1,4 @@
-package am.leon.sociallogin;
+package am.leon.sociallogin.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

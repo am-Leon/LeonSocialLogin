@@ -1,18 +1,22 @@
 package am.leon.sociallogin;
 
+import android.content.Intent;
+import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
+import am.leon.sociallogin.models.FacebookModel;
+import am.leon.sociallogin.models.GoogleModel;
+import am.leon.sociallogin.models.TwitterModel;
+import am.leon.sociallogin.response.SocialResponse;
 
 public class MainActivity extends AppCompatActivity implements SocialLogin.SocialLoginCallback {
 
+    private SocialLogin socialLogin;
     private AppCompatButton socialLogin_faceBook, socialLogin_twitter;
 
-    private SocialLogin socialLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,21 @@ public class MainActivity extends AppCompatActivity implements SocialLogin.Socia
 
     @Override
     public void socialLoginResponse(SocialResponse social) {
-        System.out.println(social.toString());
+        switch (social.getProviderType()) {
+            case TWITTER:
+                TwitterModel twitterModel = (TwitterModel) social.getResponse();
+                System.out.println(twitterModel.toString());
+                break;
+
+            case FACEBOOK:
+                FacebookModel facebookModel = (FacebookModel) social.getResponse();
+                System.out.println(facebookModel.toString());
+                break;
+
+            case GOOGLE:
+                GoogleModel googleModel = (GoogleModel) social.getResponse();
+                System.out.println(googleModel.toString());
+                break;
+        }
     }
 }

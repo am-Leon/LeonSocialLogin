@@ -1,9 +1,11 @@
-package am.leon.sociallogin;
+package am.leon.sociallogin.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class FacebookResponseModel implements Parcelable {
+import androidx.annotation.NonNull;
+
+public class FacebookModel implements Parcelable {
 
     private int id;
     private String name;
@@ -17,7 +19,7 @@ public class FacebookResponseModel implements Parcelable {
     private Location location;
     private String profilePic;
 
-    private FacebookResponseModel(Parcel in) {
+    private FacebookModel(Parcel in) {
         id = in.readInt();
         name = in.readString();
         gender = in.readString();
@@ -51,15 +53,15 @@ public class FacebookResponseModel implements Parcelable {
         return 0;
     }
 
-    public static final Creator<FacebookResponseModel> CREATOR = new Creator<FacebookResponseModel>() {
+    public static final Creator<FacebookModel> CREATOR = new Creator<FacebookModel>() {
         @Override
-        public FacebookResponseModel createFromParcel(Parcel in) {
-            return new FacebookResponseModel(in);
+        public FacebookModel createFromParcel(Parcel in) {
+            return new FacebookModel(in);
         }
 
         @Override
-        public FacebookResponseModel[] newArray(int size) {
-            return new FacebookResponseModel[size];
+        public FacebookModel[] newArray(int size) {
+            return new FacebookModel[size];
         }
     };
 
@@ -150,5 +152,23 @@ public class FacebookResponseModel implements Parcelable {
 
     public void setProfilePic(String profilePic) {
         this.profilePic = profilePic;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "FacebookModel{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", gender='" + gender + '\'' +
+                ", birthday='" + birthday + '\'' +
+                ", link='" + link + '\'' +
+                ", first_name='" + first_name + '\'' +
+                ", last_name='" + last_name + '\'' +
+                ", email='" + email + '\'' +
+                ", hometown=" + hometown +
+                ", location=" + location +
+                ", profilePic='" + profilePic + '\'' +
+                '}';
     }
 }

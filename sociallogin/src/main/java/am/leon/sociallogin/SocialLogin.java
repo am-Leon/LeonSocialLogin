@@ -9,8 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -27,11 +25,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.snapchat.kit.sdk.SnapLogin;
-import com.snapchat.kit.sdk.core.controller.LoginStateController;
-import com.snapchat.kit.sdk.login.models.MeData;
-import com.snapchat.kit.sdk.login.models.UserDataResponse;
-import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -45,21 +38,18 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.twitter.sdk.android.core.models.User;
 
+import am.leon.sociallogin.models.FacebookModel;
+import am.leon.sociallogin.models.GoogleModel;
+import am.leon.sociallogin.models.TwitterModel;
+import am.leon.sociallogin.response.ProviderType;
+import am.leon.sociallogin.response.SocialResponse;
 import retrofit2.Call;
-
-import static am.leon.sociallogin.Params.FACEBOOK;
-import static am.leon.sociallogin.Params.FIELDS;
-import static am.leon.sociallogin.Params.GOOGLE;
-import static am.leon.sociallogin.Params.RC_SIGN_IN;
-import static am.leon.sociallogin.Params.SNAPCHAT;
-import static am.leon.sociallogin.Params.TWITTER;
 
 public class SocialLogin {
 
     private View view;
     private Context context;
-
-    private SocialResponse model;
+    private static final int RC_SIGN_IN = 0;
     private SocialLoginCallback loginCallback;
 
     // Google
@@ -68,16 +58,14 @@ public class SocialLogin {
     private static CallbackManager callbackManager;
     // Twitter AuthClient
     private static TwitterAuthClient twitterAuthClient;
-
-    private LoginStateController.OnLoginStateChangedListener mLoginStateChangedListener;
-
-    private MeData snapResult;
+    // SnapChat
+//    private MeData snapResult;
+//    private LoginStateController.OnLoginStateChangedListener mLoginStateChangedListener;
 
 
     public SocialLogin(Context context, SocialLoginCallback loginCallback) {
         this.view = ((Activity) context).findViewById(android.R.id.content);
         this.context = context;
-        this.model = new SocialResponse();
         this.loginCallback = loginCallback;
 
     }
@@ -116,30 +104,19 @@ public class SocialLogin {
 
     private void getFacebookInfo(LoginResult result) {
         GraphRequest request = GraphRequest.newMeRequest(result.getAccessToken(), ((object, response) -> {
-            FacebookResponseModel facebookResponse = new Gson().fromJson(response.getJSONObject().toString(), new TypeToken<FacebookResponseModel>() {
-            }.getType());
+            SocialResponse<FacebookModel> socialResponse = new SocialResponse<>();
 
-            model.setSocialID(String.valueOf(facebookResponse.getId()));
-            model.setName(facebookResponse.getName());
-            model.setGender(facebookResponse.getGender());
-            model.setBirthday(facebookResponse.getBirthday());
-            model.setLink(facebookResponse.getLink());
-            model.setFirstName(facebookResponse.getFirst_name());
-            model.setLastName(facebookResponse.getLast_name());
-            model.setEmail(facebookResponse.getEmail());
-            model.setHometown(facebookResponse.getHometown());
-            model.setLocation(facebookResponse.getLocation());
-            model.setProfilePic(facebookResponse.getProfilePic());
-            model.setProviderType(FACEBOOK);
+            socialResponse.setProviderType(ProviderType.FACEBOOK);
+            socialResponse.setResponse(new Gson().fromJson(response.getJSONObject().toString(), new TypeToken<FacebookModel>() {
+            }.getType()));
 
-            System.out.println(model.toString());
+            Log.d("SocialResponse ", socialResponse.toString());
 
-            if (!model.getSocialID().isEmpty())
-                loginCallback.socialLoginResponse(model);
+            loginCallback.socialLoginResponse(socialResponse);
         }));
 
         Bundle parameters = new Bundle();
-        parameters.putString(FIELDS, SocialGlobalConst.getInstance().getFaceBookFields());
+        parameters.putString("fields", SocialGlobalConst.getInstance().getFaceBookFields());
         request.setParameters(parameters);
         request.executeAsync();
     }
@@ -205,30 +182,15 @@ public class SocialLogin {
         getUserCall.enqueue(new Callback<User>() {
             @Override
             public void success(Result<User> result) {
+                SocialResponse<TwitterModel> socialResponse = new SocialResponse<>();
 
-                User user = result.data;
-                model.setProviderType(TWITTER);
-                model.setSocialID(user.idStr);
-                model.setEmail(user.email);
-                model.setLocation(new Location(user.location));
-                model.setProfilePic(user.profileImageUrl);
-                model.setLink(user.url);
+                socialResponse.setProviderType(ProviderType.TWITTER);
+                socialResponse.setResponse(new Gson().fromJson(new Gson().toJson(result.data), new TypeToken<TwitterModel>() {
+                }.getType()));
 
-                // TODO: 2/3/20 if we need another size of image
-                // picture = user.profileImageUrlHttps.replace("_normal", "");
+                Log.d("SocialResponse ", socialResponse.toString());
 
-                try {
-                    model.setFirstName(user.name.split(" ")[0]);
-                    model.setLastName(user.name.split(" ")[1]);
-                    model.setName(user.screenName);
-                } catch (Exception e) {
-                    model.setFirstName(user.name);
-                }
-
-                System.out.println(model.toString());
-
-                if (!model.getSocialID().isEmpty())
-                    loginCallback.socialLoginResponse(model);
+                loginCallback.socialLoginResponse(socialResponse);
             }
 
             @Override
@@ -238,27 +200,6 @@ public class SocialLogin {
             }
         });
     }
-
-
-//    private void gettingTwitterEmail(TwitterSession session) {
-//        twitterAuthClient.requestEmail(session, new com.twitter.sdk.android.core.Callback<String>() {
-//            @Override
-//            public void success(Result<String> result) {
-//                model.setSocialID(String.valueOf(session.getUserId()));
-//                model.setFirstName(session.getUserName());
-//                model.setEmail(result.data);
-//                model.setProviderType(TWITTER);
-//
-//                if (!model.getSocialID().isEmpty())
-//                    loginCallback.socialLoginResponse(model);
-//            }
-//
-//            @Override
-//            public void failure(TwitterException exception) {
-//                rbar.make(view, R.string.failed_authenticate_please, Snackbar.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
 
 
     //----------------------------------------- Google ---------------------------------------------
@@ -281,16 +222,19 @@ public class SocialLogin {
     private void handleGoogleResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            //Signed in successfully , show authenticated UI.
-            model.setSocialID(account.getId());
-            model.setProviderType(GOOGLE);
-            model.setFirstName(account.getDisplayName());
-            model.setLastName(account.getFamilyName());
-            model.setName(account.getGivenName());
-            model.setEmail(account.getEmail());
-            model.setProfilePic(account.getPhotoUrl().getPath());
-            model.setEmail(account.getEmail());
+
+            SocialResponse<GoogleModel> socialResponse = new SocialResponse<>();
+
+            socialResponse.setProviderType(ProviderType.GOOGLE);
+            socialResponse.setResponse(new Gson().fromJson(new Gson().toJson(account), new TypeToken<GoogleModel>() {
+            }.getType()));
+
+            Log.d("SocialResponse ", socialResponse.toString());
+
+            loginCallback.socialLoginResponse(socialResponse);
+
         } catch (ApiException e) {
+            failureMessage(context.getString(R.string.failed_authenticate_please));
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCode class reference for more information.
             Log.w("Tag", "sign InResult:failed code =" + e.getStatusCode());
@@ -300,73 +244,73 @@ public class SocialLogin {
 
     //----------------------------------------- SnapChat -------------------------------------------
 
-    public void snapChatLogin() {
-        mLoginStateChangedListener =
-                new LoginStateController.OnLoginStateChangedListener() {
-                    @Override
-                    public void onLoginSucceeded() {
-                        Log.d("SnapkitLogin", "Login was successful");
-                        getUserDetails();
-                    }
-
-                    @Override
-                    public void onLoginFailed() {
-                        Log.d("SnapkitLogin", "Login was unsuccessful");
-                    }
-
-                    @Override
-                    public void onLogout() {
-                        // when the user unlinks their account we reset the fields and make the login button visible
-                        Log.d("SnapkitLogin", "User logged out");
-//                        resetUserInfo();
-                    }
-                };
-
-        SnapLogin.getLoginStateController(context).addOnLoginStateChangedListener(mLoginStateChangedListener);
+    private void snapChatLogin() {
+//        mLoginStateChangedListener =
+//                new LoginStateController.OnLoginStateChangedListener() {
+//                    @Override
+//                    public void onLoginSucceeded() {
+//                        Log.d("SnapkitLogin", "Login was successful");
+//                        getUserDetails();
+//                    }
+//
+//                    @Override
+//                    public void onLoginFailed() {
+//                        Log.d("SnapkitLogin", "Login was unsuccessful");
+//                    }
+//
+//                    @Override
+//                    public void onLogout() {
+//                        // when the user unlinks their account we reset the fields and make the login button visible
+//                        Log.d("SnapkitLogin", "User logged out");
+////                        resetUserInfo();
+//                    }
+//                };
+//
+//        SnapLogin.getLoginStateController(context).addOnLoginStateChangedListener(mLoginStateChangedListener);
 
     }
 
 
     private void getUserDetails() {
-        boolean isUserLoggedIn = SnapLogin.isUserLoggedIn(context);
-        if (isUserLoggedIn) {
-            Log.d("SnapkitLogin", "The user is logged in");
-
-            // set a list of the data the app wants to use - these need to mirror the snap_connect_scopes set in arrays.xml
-            String query = "{me{bitmoji{avatar},displayName,externalId}}";
-
-            SnapLogin.fetchUserData(context, query, null, new FetchUserDataCallback() {
-                @Override
-                public void onSuccess(@Nullable UserDataResponse userDataResponse) {
-                    if (userDataResponse == null || userDataResponse.getData() == null) {
-                        return;
-                    }
-
-                    snapResult = userDataResponse.getData().getMe();
-                    if (snapResult == null) {
-                        return;
-                    }
-
-                    // set the value of the display name
-                    model.setName(userDataResponse.getData().getMe().getDisplayName());
-
-                    // set the value of the external id
-                    model.setProviderType(SNAPCHAT);
-                    model.setSocialID(userDataResponse.getData().getMe().getExternalId());
-
-                    // not all users have a bitmoji connected, if the account has bitmoji connected we load the bitmoji avatar
-                    if (snapResult.getBitmojiData() != null) {
-                        model.setProfilePic(snapResult.getBitmojiData().getAvatar());
-                    }
-                }
-
-                @Override
-                public void onFailure(boolean isNetworkError, int statusCode) {
-                    Log.d("SnapkitLogin", "No user data fetched " + statusCode);
-                }
-            });
-
-        }
+//        boolean isUserLoggedIn = SnapLogin.isUserLoggedIn(context);
+//        if (isUserLoggedIn) {
+//            Log.d("SnapkitLogin", "The user is logged in");
+//
+//            // set a list of the data the app wants to use - these need to mirror the snap_connect_scopes set in arrays.xml
+//            String query = "{me{bitmoji{avatar},displayName,externalId}}";
+//
+//            SnapLogin.fetchUserData(context, query, null, new FetchUserDataCallback() {
+//                @Override
+//                public void onSuccess(@Nullable UserDataResponse userDataResponse) {
+//                    if (userDataResponse == null || userDataResponse.getData() == null) {
+//                        return;
+//                    }
+//
+//                    snapResult = userDataResponse.getData().getMe();
+//                    if (snapResult == null) {
+//                        return;
+//                    }
+//
+//                    // set the value of the display name
+//                    model.setName(userDataResponse.getData().getMe().getDisplayName());
+//
+//                    // set the value of the external id
+//                    model.setProviderType(SNAPCHAT);
+//                    model.setSocialID(userDataResponse.getData().getMe().getExternalId());
+//
+//                    // not all users have a bitmoji connected, if the account has bitmoji connected we load the bitmoji avatar
+//                    if (snapResult.getBitmojiData() != null) {
+//                        model.setProfilePic(snapResult.getBitmojiData().getAvatar());
+//                    }
+//                }
+//
+//                @Override
+//                public void onFailure(boolean isNetworkError, int statusCode) {
+//                    Log.d("SnapkitLogin", "No user data fetched " + statusCode);
+//                }
+//            });
+//
+//        }
     }
 
 
@@ -415,7 +359,7 @@ public class SocialLogin {
 
 
     public interface SocialLoginCallback {
-        void socialLoginResponse(SocialResponse social);
+        void socialLoginResponse(SocialResponse response);
     }
 
 }
