@@ -8,7 +8,7 @@ public class SocialGlobalConst {
 //    private String twitter_CONSUMER_KEY;
 //    private String twitter_CONSUMER_SECRET;
 
-    private String faceBookFields;
+    private String faceBookFields = "";
     private List<String> faceBookPermissions;
 
     private static SocialGlobalConst instance = new SocialGlobalConst();
