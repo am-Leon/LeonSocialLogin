@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 
 public class FacebookModel implements Parcelable {
 
-    private int id;
+    private String id;
     private String name;
     private String gender;
     private String birthday;
@@ -20,7 +20,7 @@ public class FacebookModel implements Parcelable {
     private String profilePic;
 
     private FacebookModel(Parcel in) {
-        id = in.readInt();
+        id = in.readString();
         name = in.readString();
         gender = in.readString();
         birthday = in.readString();
@@ -35,7 +35,7 @@ public class FacebookModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
+        dest.writeString(id);
         dest.writeString(name);
         dest.writeString(gender);
         dest.writeString(birthday);
@@ -65,11 +65,11 @@ public class FacebookModel implements Parcelable {
         }
     };
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
