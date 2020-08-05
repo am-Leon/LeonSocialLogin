@@ -1,6 +1,6 @@
 # LeonSocialLogin
 
-Leon Social Login is an Android library written to Integrate (Twitter, Facebook, Google) login.
+Leon Social Login is an Android library written to Integrate (Twitter, Facebook, Google, SnapChat) login.
 
 ## Installation
 
