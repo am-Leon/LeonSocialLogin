@@ -1,4 +1,4 @@
-# LeonSocialLogin
+# LeonSocialLogin [![](https://jitpack.io/v/am-Leon/LeonSocialLogin.svg)](https://jitpack.io/#am-Leon/LeonSocialLogin)
 
 Leon Social Login is an Android library written to Integrate (Twitter, Facebook, Google, SnapChat) login.
 
