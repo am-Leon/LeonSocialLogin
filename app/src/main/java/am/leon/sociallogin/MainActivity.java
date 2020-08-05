@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import am.leon.sociallogin.models.FacebookModel;
 import am.leon.sociallogin.models.GoogleModel;
+import am.leon.sociallogin.models.SnapChatModel;
 import am.leon.sociallogin.models.TwitterModel;
 import am.leon.sociallogin.response.SocialResponse;
 
@@ -30,9 +31,9 @@ public class MainActivity extends AppCompatActivity implements SocialLogin.Socia
 
         socialLogin_faceBook.setOnClickListener(v -> socialLogin.facebookLogin());
 
-        socialLogin_twitter.setOnClickListener(v -> socialLogin.twitterLogin());
+//        socialLogin_twitter.setOnClickListener(v -> socialLogin.twitterLogin());
 
-        socialLogin_twitter.setOnClickListener(v -> socialLogin.googleLogin());
+        socialLogin_twitter.setOnClickListener(v -> socialLogin.snapChatLogin());
 
     }
 
@@ -56,9 +57,9 @@ public class MainActivity extends AppCompatActivity implements SocialLogin.Socia
                 System.out.println(facebookModel.toString());
                 break;
 
-            case GOOGLE:
-                GoogleModel googleModel = (GoogleModel) social.getResponse();
-                System.out.println(googleModel.toString());
+            case SNAPCHAT:
+                SnapChatModel snapChatModel = (SnapChatModel) social.getResponse();
+                System.out.println(snapChatModel.toString());
                 break;
         }
     }

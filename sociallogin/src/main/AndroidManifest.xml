@@ -30,31 +30,34 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <!--        <activity-->
-        <!--            android:name="com.snapchat.kit.sdk.SnapKitActivity"-->
-        <!--            android:launchMode="singleTask">-->
-        <!--            <intent-filter>-->
-        <!--                <action android:name="android.intent.action.VIEW" />-->
 
-        <!--                <category android:name="android.intent.category.DEFAULT" />-->
-        <!--                <category android:name="android.intent.category.BROWSABLE" />-->
+                                                    <!--    SnapChat    -->
+        <activity
+            android:name="com.snapchat.kit.sdk.SnapKitActivity"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
 
-        <!--                <data-->
-        <!--                    android:host="@string/base_url"-->
-        <!--                    android:path="/api/orders"-->
-        <!--                    android:scheme="https" />-->
-        <!--            </intent-filter>-->
-        <!--        </activity>-->
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
-        <!--        <meta-data-->
-        <!--            android:name="com.snapchat.kit.sdk.clientId"-->
-        <!--            android:value="8e833316-b476-49b0-b137-b79b8836280c" />-->
-        <!--        <meta-data-->
-        <!--            android:name="com.snapchat.kit.sdk.redirectUrl"-->
-        <!--            android:value="00LFGF9nQKDp14NRcB9WOz1SZtaO7-gYHLgWCyivnIM" />-->
-        <!--        <meta-data-->
-        <!--            android:name="com.snapchat.kit.sdk.scopes"-->
-        <!--            android:resource="@array/snap_connect_scopes" />-->
+                <data
+                    android:host="auth"
+                    android:path="/snap"
+                    android:scheme="northsweets" />
+
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.snapchat.kit.sdk.clientId"
+            android:value="@string/snap_chat_client_id" />
+        <meta-data
+            android:name="com.snapchat.kit.sdk.redirectUrl"
+            android:value="@string/snap_chat_redirect_url" />
+        <meta-data
+            android:name="com.snapchat.kit.sdk.scopes"
+            android:resource="@array/snap_connect_scopes" />
 
     </application>
 

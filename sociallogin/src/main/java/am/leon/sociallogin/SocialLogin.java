@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -25,6 +27,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.snapchat.kit.sdk.SnapLogin;
+import com.snapchat.kit.sdk.core.controller.LoginStateController;
+import com.snapchat.kit.sdk.login.models.MeData;
+import com.snapchat.kit.sdk.login.models.UserDataResponse;
+import com.snapchat.kit.sdk.login.networking.FetchUserDataCallback;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -40,6 +47,7 @@ import com.twitter.sdk.android.core.models.User;
 
 import am.leon.sociallogin.models.FacebookModel;
 import am.leon.sociallogin.models.GoogleModel;
+import am.leon.sociallogin.models.SnapChatModel;
 import am.leon.sociallogin.models.TwitterModel;
 import am.leon.sociallogin.response.ProviderType;
 import am.leon.sociallogin.response.SocialResponse;
@@ -59,8 +67,8 @@ public class SocialLogin {
     // Twitter AuthClient
     private static TwitterAuthClient twitterAuthClient;
     // SnapChat
-//    private MeData snapResult;
-//    private LoginStateController.OnLoginStateChangedListener mLoginStateChangedListener;
+    private MeData snapResult;
+    private LoginStateController.OnLoginStateChangedListener mLoginStateChangedListener;
 
 
     public SocialLogin(Context context, SocialLoginCallback loginCallback) {
@@ -244,73 +252,77 @@ public class SocialLogin {
 
     //----------------------------------------- SnapChat -------------------------------------------
 
-    private void snapChatLogin() {
-//        mLoginStateChangedListener =
-//                new LoginStateController.OnLoginStateChangedListener() {
-//                    @Override
-//                    public void onLoginSucceeded() {
-//                        Log.d("SnapkitLogin", "Login was successful");
-//                        getUserDetails();
-//                    }
-//
-//                    @Override
-//                    public void onLoginFailed() {
-//                        Log.d("SnapkitLogin", "Login was unsuccessful");
-//                    }
-//
-//                    @Override
-//                    public void onLogout() {
-//                        // when the user unlinks their account we reset the fields and make the login button visible
-//                        Log.d("SnapkitLogin", "User logged out");
-////                        resetUserInfo();
-//                    }
-//                };
-//
-//        SnapLogin.getLoginStateController(context).addOnLoginStateChangedListener(mLoginStateChangedListener);
 
+    public void snapChatLogin() {
+        SnapLogin.getAuthTokenManager(context).startTokenGrant();
+
+        mLoginStateChangedListener =
+                new LoginStateController.OnLoginStateChangedListener() {
+                    @Override
+                    public void onLoginSucceeded() {
+                        // Here you could update UI to show login success
+                        Log.d("SnapkitLogin", "Login was successful");
+                        getUserDetails();
+                    }
+
+                    @Override
+                    public void onLoginFailed() {
+                        // Here you could update UI to show login failure
+                        Log.d("SnapkitLogin", "Login was unsuccessful");
+                    }
+
+                    @Override
+                    public void onLogout() {
+                        // Here you could update UI to reflect logged out state
+                        // when the user unlinks their account we reset the fields and make the login button visible
+                        Log.d("SnapkitLogin", "User logged out");
+//                        resetUserInfo();
+                    }
+                };
+
+        SnapLogin.getLoginStateController(context).addOnLoginStateChangedListener(mLoginStateChangedListener);
     }
 
 
     private void getUserDetails() {
-//        boolean isUserLoggedIn = SnapLogin.isUserLoggedIn(context);
-//        if (isUserLoggedIn) {
-//            Log.d("SnapkitLogin", "The user is logged in");
-//
-//            // set a list of the data the app wants to use - these need to mirror the snap_connect_scopes set in arrays.xml
-//            String query = "{me{bitmoji{avatar},displayName,externalId}}";
-//
-//            SnapLogin.fetchUserData(context, query, null, new FetchUserDataCallback() {
-//                @Override
-//                public void onSuccess(@Nullable UserDataResponse userDataResponse) {
-//                    if (userDataResponse == null || userDataResponse.getData() == null) {
-//                        return;
-//                    }
-//
-//                    snapResult = userDataResponse.getData().getMe();
-//                    if (snapResult == null) {
-//                        return;
-//                    }
-//
-//                    // set the value of the display name
-//                    model.setName(userDataResponse.getData().getMe().getDisplayName());
-//
-//                    // set the value of the external id
-//                    model.setProviderType(SNAPCHAT);
-//                    model.setSocialID(userDataResponse.getData().getMe().getExternalId());
-//
-//                    // not all users have a bitmoji connected, if the account has bitmoji connected we load the bitmoji avatar
-//                    if (snapResult.getBitmojiData() != null) {
-//                        model.setProfilePic(snapResult.getBitmojiData().getAvatar());
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(boolean isNetworkError, int statusCode) {
-//                    Log.d("SnapkitLogin", "No user data fetched " + statusCode);
-//                }
-//            });
-//
-//        }
+        boolean isUserLoggedIn = SnapLogin.isUserLoggedIn(context);
+        if (isUserLoggedIn) {
+            Log.d("SnapkitLogin", "The user is logged in");
+
+            // set a list of the data the app wants to use - these need to mirror the snap_connect_scopes set in arrays.xml
+            String query = "{me{bitmoji{avatar},displayName,externalId}}";
+
+            SnapLogin.fetchUserData(context, query, null, new FetchUserDataCallback() {
+                @Override
+                public void onSuccess(@Nullable UserDataResponse userDataResponse) {
+                    if (userDataResponse == null || userDataResponse.getData() == null)
+                        return;
+
+                    snapResult = userDataResponse.getData().getMe();
+                    if (snapResult == null)
+                        return;
+
+                    SnapChatModel model = new SnapChatModel();
+                    model.setUserID(snapResult.getExternalId());
+                    model.setDisplayName(snapResult.getDisplayName());
+
+                    if (snapResult.getBitmojiData() != null)
+                        model.setAvatar(snapResult.getBitmojiData().getAvatar());
+
+                    SocialResponse<SnapChatModel> socialResponse = new SocialResponse<>();
+                    socialResponse.setProviderType(ProviderType.SNAPCHAT);
+                    socialResponse.setResponse(model);
+
+                    Log.d("SocialResponse ", socialResponse.toString());
+                    loginCallback.socialLoginResponse(socialResponse);
+                }
+
+                @Override
+                public void onFailure(boolean isNetworkError, int statusCode) {
+                    Log.d("SnapkitLogin", "No user data fetched " + statusCode);
+                }
+            });
+        }
     }
 
 

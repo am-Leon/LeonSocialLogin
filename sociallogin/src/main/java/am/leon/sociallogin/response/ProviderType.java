@@ -4,7 +4,8 @@ public enum ProviderType {
 
     FACEBOOK(1),
     TWITTER(2),
-    GOOGLE(3);
+    GOOGLE(3),
+    SNAPCHAT(4);
 
     private int providerType;
 

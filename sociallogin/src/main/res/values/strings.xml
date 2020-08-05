@@ -9,6 +9,10 @@
     <string name="twitter_CONSUMER_KEY" translatable="false">your_twitter_consumer_key</string>
     <string name="twitter_CONSUMER_SECRET" translatable="false">your_twitter_consumer_secret</string>
 
+    <!--snap chat-->
+    <string name="snap_chat_client_id" translatable="false">your_snap_chat_client_id</string>
+    <string name="snap_chat_redirect_url" translatable="false">snap_chat_redirect_url</string>
+
     <string name="canceled_by_user">Canceled by user</string>
     <string name="failed_authenticate_please">Failed to authenticate, Please try again</string>
     <string name="install_twitter">Please Install Twitter App</string>
