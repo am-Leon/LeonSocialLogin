@@ -26,7 +26,7 @@ allprojects {
 
 ## Usage
 
-1- open strings file and paste with your (consumerKey & consumerSecret).
+1- open strings.xml file and paste these strings for what you need.
 
 ```xml
 <resources>
@@ -39,6 +39,17 @@ allprojects {
     <string name="twitter_CONSUMER_KEY" translatable="false">your_twitter_consumer_key</string>
     <string name="twitter_CONSUMER_SECRET" translatable="false">your_twitter_consumer_secret</string>
 
+    <!--snapChat-->
+    <string name="snap_chat_client_id" translatable="false">snap_chat_client_id</string>
+    <string name="snap_chat_redirect_url" translatable="false">snap_chat_redirect_url</string>
+
+       <!-- Enter the parts of your redirect url below
+            e.g., if your redirect url is myapp://snap-kit/oauth2
+       !-->
+    <string name="snap_chat_host_value" translatable="false">snap-kit</string>
+    <string name="snap_chat_path_value" translatable="false">/oauth2</string>
+    <string name="snap_chat_scheme_value" translatable="false">myapp</string>
+
 </resources>
 ```
 
@@ -50,7 +61,7 @@ allprojects {
 public class MainActivity extends AppCompatActivity implements SocialLogin.SocialLoginCallback {
 
     private SocialLogin socialLogin;
-    private AppCompatButton socialLogin_faceBook, socialLogin_twitter, socialLogin_google;
+    private AppCompatButton socialLogin_faceBook, socialLogin_twitter, socialLogin_google, socialLogin_snapChat;
 
 
     @Override
@@ -68,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements SocialLogin.Socia
         socialLogin_twitter.setOnClickListener(v -> socialLogin.twitterLogin());
         
         socialLogin_google.setOnClickListener(v -> socialLogin.googleLogin());
+
+        socialLogin_snapChat.setOnClickListener(v -> socialLogin.snapChatLogin());
 
     }
 
@@ -94,6 +107,11 @@ public class MainActivity extends AppCompatActivity implements SocialLogin.Socia
             case GOOGLE:
                 GoogleModel googleModel = (GoogleModel) social.getResponse();
                 System.out.println(googleModel.toString());
+                break;
+
+            case SNAPCHAT:
+                SnapChatModel snapChatModel = (SnapChatModel) social.getResponse();
+                System.out.println(snapChatModel.toString());
                 break;
         }
     }
