@@ -1,8 +1,13 @@
 package am.leon.sociallogin.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import com.google.gson.annotations.SerializedName;
 
-public class SnapChatModel {
+public class SnapChatModel implements Parcelable {
 
     @SerializedName("displayName")
     private String displayName;
@@ -14,6 +19,36 @@ public class SnapChatModel {
 
     public SnapChatModel() {
     }
+
+    private SnapChatModel(Parcel in) {
+        displayName = in.readString();
+        userID = in.readString();
+        avatar = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(displayName);
+        dest.writeString(userID);
+        dest.writeString(avatar);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<SnapChatModel> CREATOR = new Creator<SnapChatModel>() {
+        @Override
+        public SnapChatModel createFromParcel(Parcel in) {
+            return new SnapChatModel(in);
+        }
+
+        @Override
+        public SnapChatModel[] newArray(int size) {
+            return new SnapChatModel[size];
+        }
+    };
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
@@ -37,6 +72,16 @@ public class SnapChatModel {
 
     public String getUserID() {
         return this.userID;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "SnapChatModel{" +
+                "displayName='" + displayName + '\'' +
+                ", userID='" + userID + '\'' +
+                ", avatar='" + avatar + '\'' +
+                '}';
     }
 
 }

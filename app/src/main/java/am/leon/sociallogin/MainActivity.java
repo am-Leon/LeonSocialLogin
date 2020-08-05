@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import am.leon.sociallogin.models.FacebookModel;
-import am.leon.sociallogin.models.GoogleModel;
 import am.leon.sociallogin.models.SnapChatModel;
 import am.leon.sociallogin.models.TwitterModel;
 import am.leon.sociallogin.response.SocialResponse;
@@ -16,7 +15,7 @@ import am.leon.sociallogin.response.SocialResponse;
 public class MainActivity extends AppCompatActivity implements SocialLogin.SocialLoginCallback {
 
     private SocialLogin socialLogin;
-    private AppCompatButton socialLogin_faceBook, socialLogin_twitter;
+    private AppCompatButton socialLogin_faceBook, socialLogin_twitter, socialLogin_snapChat;
 
 
     @Override
@@ -28,12 +27,13 @@ public class MainActivity extends AppCompatActivity implements SocialLogin.Socia
 
         socialLogin_faceBook = findViewById(R.id.socialLogin_faceBook);
         socialLogin_twitter = findViewById(R.id.socialLogin_twitter);
+        socialLogin_snapChat = findViewById(R.id.socialLogin_snapChat);
 
         socialLogin_faceBook.setOnClickListener(v -> socialLogin.facebookLogin());
 
-//        socialLogin_twitter.setOnClickListener(v -> socialLogin.twitterLogin());
+        socialLogin_twitter.setOnClickListener(v -> socialLogin.twitterLogin());
 
-        socialLogin_twitter.setOnClickListener(v -> socialLogin.snapChatLogin());
+        socialLogin_snapChat.setOnClickListener(v -> socialLogin.snapChatLogin());
 
     }
 
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements SocialLogin.Socia
     }
 
     @Override
-    public void socialLoginResponse(SocialResponse social) {
+    public void socialLoginResponse(SocialResponse<?> social) {
         switch (social.getProviderType()) {
             case TWITTER:
                 TwitterModel twitterModel = (TwitterModel) social.getResponse();

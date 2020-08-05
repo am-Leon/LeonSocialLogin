@@ -9,14 +9,21 @@
         android:id="@+id/socialLogin_faceBook"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="faceBook" />
+        android:text="FaceBook" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/socialLogin_twitter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/socialLogin_faceBook"
-        android:text="twitter" />
+        android:text="Twitter" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/socialLogin_snapChat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/socialLogin_twitter"
+        android:text="SnapChat" />
 
 
 </RelativeLayout>

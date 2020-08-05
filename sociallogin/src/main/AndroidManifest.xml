@@ -9,6 +9,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
 
+        <!--   FaceBook    -->
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -31,7 +32,7 @@
             android:value="@string/facebook_app_id" />
 
 
-                                                    <!--    SnapChat    -->
+        <!--    SnapChat    -->
         <activity
             android:name="com.snapchat.kit.sdk.SnapKitActivity"
             android:launchMode="singleTask">
@@ -42,9 +43,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="auth"
-                    android:path="/snap"
-                    android:scheme="northsweets" />
+                    android:host="@string/snap_chat_host_value"
+                    android:path="@string/snap_chat_path_value"
+                    android:scheme="@string/snap_chat_scheme_value" />
 
             </intent-filter>
         </activity>

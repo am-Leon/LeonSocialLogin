@@ -260,23 +260,19 @@ public class SocialLogin {
                 new LoginStateController.OnLoginStateChangedListener() {
                     @Override
                     public void onLoginSucceeded() {
-                        // Here you could update UI to show login success
                         Log.d("SnapkitLogin", "Login was successful");
                         getUserDetails();
                     }
 
                     @Override
                     public void onLoginFailed() {
-                        // Here you could update UI to show login failure
+                        failureMessage(context.getString(R.string.failed_authenticate_please));
                         Log.d("SnapkitLogin", "Login was unsuccessful");
                     }
 
                     @Override
                     public void onLogout() {
-                        // Here you could update UI to reflect logged out state
-                        // when the user unlinks their account we reset the fields and make the login button visible
                         Log.d("SnapkitLogin", "User logged out");
-//                        resetUserInfo();
                     }
                 };
 
@@ -289,10 +285,7 @@ public class SocialLogin {
         if (isUserLoggedIn) {
             Log.d("SnapkitLogin", "The user is logged in");
 
-            // set a list of the data the app wants to use - these need to mirror the snap_connect_scopes set in arrays.xml
-            String query = "{me{bitmoji{avatar},displayName,externalId}}";
-
-            SnapLogin.fetchUserData(context, query, null, new FetchUserDataCallback() {
+            SnapLogin.fetchUserData(context, SocialGlobalConst.getInstance().getSnapChatQueries(), null, new FetchUserDataCallback() {
                 @Override
                 public void onSuccess(@Nullable UserDataResponse userDataResponse) {
                     if (userDataResponse == null || userDataResponse.getData() == null)
@@ -319,10 +312,16 @@ public class SocialLogin {
 
                 @Override
                 public void onFailure(boolean isNetworkError, int statusCode) {
+                    failureMessage(context.getString(R.string.failed_authenticate_please));
                     Log.d("SnapkitLogin", "No user data fetched " + statusCode);
                 }
             });
         }
+    }
+
+
+    public void snapChatLogout() {
+        SnapLogin.getLoginStateController(context).removeOnLoginStateChangedListener(mLoginStateChangedListener);
     }
 
 
@@ -371,7 +370,7 @@ public class SocialLogin {
 
 
     public interface SocialLoginCallback {
-        void socialLoginResponse(SocialResponse response);
+        void socialLoginResponse(SocialResponse<?> response);
     }
 
 }

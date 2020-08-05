@@ -58,7 +58,7 @@ public class SocialResponse<T> implements Parcelable {
     public String toString() {
         return "SocialResponse{" +
                 ", providerType= " + providerType +
-                "response= " + t + '}';
+                " response= " + t + '}';
     }
 
 }
