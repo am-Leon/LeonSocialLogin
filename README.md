@@ -11,6 +11,7 @@ Leon Social Login is an Android library written to Integrate (Twitter, Facebook,
 allprojects {  
       repositories {  
          maven { url 'https://jitpack.io' }  
+         maven { url "https://storage.googleapis.com/snap-kit-build/maven" }
       }  
    }  
    
@@ -20,7 +21,7 @@ allprojects {
 
 ```groovy
 
-    implementation 'com.github.am-Leon:LeonSocialLogin:v1.0.7'
+    implementation 'com.github.am-Leon:LeonSocialLogin:v1.0.8'
 
 ```
 
