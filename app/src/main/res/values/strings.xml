@@ -1,10 +1,19 @@
 <resources>
     <string name="app_name" translatable="false">LeonSocialLogin</string>
 
+    <!--facebook-->
     <string name="facebook_app_id" translatable="false">your_facebook_app_id</string>
     <string name="fb_login_protocol_scheme" translatable="false">your_facebook_login_protocol_schema</string>
 
+    <!--twitter-->
     <string name="twitter_CONSUMER_KEY" translatable="false">your_twitter_consumer_key</string>
     <string name="twitter_CONSUMER_SECRET" translatable="false">your_twitter_consumer_secret</string>
+
+    <!--snapChat-->
+    <string name="snap_chat_client_id" translatable="false">snap_chat_client_id</string>
+    <string name="snap_chat_redirect_url" translatable="false">snap_chat_redirect_url</string>
+    <string name="snap_chat_host_value" translatable="false">snap_chat_host_value</string>
+    <string name="snap_chat_path_value" translatable="false">/snap_chat_path_value</string>
+    <string name="snap_chat_scheme_value" translatable="false">snap_chat_scheme_value</string>
 
 </resources>
