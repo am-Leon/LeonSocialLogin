@@ -8,7 +8,7 @@ public class SocialGlobalConst {
     private String faceBookFields = "";
     private List<String> faceBookPermissions;
 
-    private static SocialGlobalConst instance = new SocialGlobalConst();
+    private static final SocialGlobalConst instance = new SocialGlobalConst();
 
     public static SocialGlobalConst getInstance() {
         return instance;
@@ -19,7 +19,7 @@ public class SocialGlobalConst {
         if (faceBookFields.length() != 0)
             return faceBookFields;
         else
-            return "first_name,last_name,email,id";
+            return "name,first_name,last_name,email,id,birthday,gender,hometown,location";
     }
 
     public void setFaceBookFields(String faceBookFields) {
@@ -28,7 +28,10 @@ public class SocialGlobalConst {
 
     List<String> getFaceBookPermissions() {
         List<String> permissions = new ArrayList<>();
-        permissions.add("public_profile");
+        permissions.add("user_hometown");
+        permissions.add("user_birthday");
+        permissions.add("user_location");
+        permissions.add("user_gender");
         permissions.add("email");
         if (faceBookPermissions != null)
             return faceBookPermissions;

@@ -31,6 +31,21 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
+        <meta-data
+            android:name="com.facebook.sdk.AutoInitEnabled"
+            android:value="false" />
+
+        <meta-data
+            android:name="com.facebook.sdk.AutoLogAppEventsEnabled"
+            android:value="false" />
+
+        <meta-data
+            android:name="com.facebook.sdk.AutoLogAppEventsEnabled"
+            android:value="false" />
+
+        <meta-data
+            android:name="com.facebook.sdk.AdvertiserIDCollectionEnabled"
+            android:value="false" />
 
         <!--    SnapChat    -->
         <activity
@@ -53,9 +68,11 @@
         <meta-data
             android:name="com.snapchat.kit.sdk.clientId"
             android:value="@string/snap_chat_client_id" />
+
         <meta-data
             android:name="com.snapchat.kit.sdk.redirectUrl"
             android:value="@string/snap_chat_redirect_url" />
+
         <meta-data
             android:name="com.snapchat.kit.sdk.scopes"
             android:resource="@array/snap_connect_scopes" />

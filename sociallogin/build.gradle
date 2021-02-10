@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -26,19 +26,19 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.13'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation 'junit:junit:4.13.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
 
     // Facebook
-    implementation 'com.facebook.android:facebook-login:5.0.1'
-    implementation 'com.facebook.android:facebook-android-sdk:5.0.1'
+    implementation 'com.facebook.android:facebook-login:9.0.0'
+//    implementation 'com.facebook.android:facebook-android-sdk:5.0.1'
 
     // Google
-    implementation 'com.google.android.gms:play-services-auth:18.0.0'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     // Twitter
     implementation 'com.twitter.sdk.android:twitter-core:3.3.0'
@@ -48,9 +48,6 @@ dependencies {
     }
 
     // SnapChat
-    implementation([
-            'com.snapchat.kit.sdk:login:1.6.0',
-            'com.snapchat.kit.sdk:core:1.6.0'
-    ])
+    implementation(['com.snapchat.kit.sdk:login:1.6.0', 'com.snapchat.kit.sdk:core:1.6.0'])
 
 }

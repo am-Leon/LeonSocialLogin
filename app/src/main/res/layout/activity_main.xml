@@ -25,5 +25,11 @@
         android:layout_below="@id/socialLogin_twitter"
         android:text="SnapChat" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/socialLogin_google"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/socialLogin_snapChat"
+        android:text="Google" />
 
 </RelativeLayout>

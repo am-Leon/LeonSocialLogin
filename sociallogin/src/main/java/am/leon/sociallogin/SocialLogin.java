@@ -7,10 +7,11 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -24,7 +25,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.snapchat.kit.sdk.SnapLogin;
@@ -55,10 +55,10 @@ import retrofit2.Call;
 
 public class SocialLogin {
 
-    private View view;
-    private Context context;
+    private final Context context;
     private static final int RC_SIGN_IN = 0;
-    private SocialLoginCallback loginCallback;
+    private final SocialLoginCallback loginCallback;
+    private static final String TAG = "SocialLogin";
 
     // Google
     private GoogleSignInClient mGoogleSignInClient;
@@ -72,40 +72,44 @@ public class SocialLogin {
 
 
     public SocialLogin(Context context, SocialLoginCallback loginCallback) {
-        this.view = ((Activity) context).findViewById(android.R.id.content);
         this.context = context;
         this.loginCallback = loginCallback;
-
     }
 
 
     //----------------------------------------- Facebook -------------------------------------------
 
     private void facebookInit() {
+        FacebookSdk.fullyInitialize();
         callbackManager = CallbackManager.Factory.create();
+    }
+
+
+    private boolean facebookIsUserLoggedIn() {
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        return accessToken != null && !accessToken.isExpired();
     }
 
 
     public void facebookLogin() {
         facebookInit();
-        LoginManager.getInstance().registerCallback(callbackManager,
-                new FacebookCallback<LoginResult>() {
-                    @Override
-                    public void onSuccess(LoginResult loginResult) {
-                        getFacebookInfo(loginResult);
-                    }
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                getFacebookInfo(loginResult);
+            }
 
-                    @Override
-                    public void onCancel() {
-                        failureMessage(context.getString(R.string.canceled_by_user));
-                    }
+            @Override
+            public void onCancel() {
+                failureMessage(context.getString(R.string.canceled_by_user));
+            }
 
-                    @Override
-                    public void onError(FacebookException e) {
-                        System.out.println(e.getLocalizedMessage());
-                        failureMessage(context.getString(R.string.failed_authenticate_please));
-                    }
-                });
+            @Override
+            public void onError(FacebookException e) {
+                failureMessage(context.getString(R.string.failed_authenticate_please));
+                showLog(e.getMessage());
+            }
+        });
         LoginManager.getInstance().logInWithReadPermissions((Activity) context, SocialGlobalConst.getInstance().getFaceBookPermissions());
     }
 
@@ -117,8 +121,6 @@ public class SocialLogin {
             socialResponse.setProviderType(ProviderType.FACEBOOK);
             socialResponse.setResponse(new Gson().fromJson(response.getJSONObject().toString(), new TypeToken<FacebookModel>() {
             }.getType()));
-
-            Log.d("SocialResponse ", socialResponse.toString());
 
             loginCallback.socialLoginResponse(socialResponse);
         }));
@@ -176,7 +178,7 @@ public class SocialLogin {
                 @Override
                 public void failure(TwitterException e) {
                     failureMessage(context.getString(R.string.failed_authenticate_please));
-                    e.printStackTrace();
+                    showLog(e.getMessage());
                 }
             });
         } else
@@ -196,15 +198,13 @@ public class SocialLogin {
                 socialResponse.setResponse(new Gson().fromJson(new Gson().toJson(result.data), new TypeToken<TwitterModel>() {
                 }.getType()));
 
-                Log.d("SocialResponse ", socialResponse.toString());
-
                 loginCallback.socialLoginResponse(socialResponse);
             }
 
             @Override
             public void failure(TwitterException exception) {
                 failureMessage(context.getString(R.string.failed_authenticate_please));
-                Log.e("Twitter", "Failed to get user data " + exception.getMessage());
+                showLog("Failed to get user data " + exception.getMessage());
             }
         });
     }
@@ -214,6 +214,7 @@ public class SocialLogin {
 
     private void googleInit() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
@@ -230,14 +231,11 @@ public class SocialLogin {
     private void handleGoogleResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
             SocialResponse<GoogleModel> socialResponse = new SocialResponse<>();
 
             socialResponse.setProviderType(ProviderType.GOOGLE);
             socialResponse.setResponse(new Gson().fromJson(new Gson().toJson(account), new TypeToken<GoogleModel>() {
             }.getType()));
-
-            Log.d("SocialResponse ", socialResponse.toString());
 
             loginCallback.socialLoginResponse(socialResponse);
 
@@ -245,7 +243,7 @@ public class SocialLogin {
             failureMessage(context.getString(R.string.failed_authenticate_please));
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCode class reference for more information.
-            Log.w("Tag", "sign InResult:failed code =" + e.getStatusCode());
+            showLog("sign InResult:failed code =" + e.getStatusCode());
         }
     }
 
@@ -255,27 +253,24 @@ public class SocialLogin {
 
     public void snapChatLogin() {
         SnapLogin.getAuthTokenManager(context).startTokenGrant();
+        mLoginStateChangedListener = new LoginStateController.OnLoginStateChangedListener() {
+            @Override
+            public void onLoginSucceeded() {
+                showLog("Login was successful");
+                getUserDetails();
+            }
 
-        mLoginStateChangedListener =
-                new LoginStateController.OnLoginStateChangedListener() {
-                    @Override
-                    public void onLoginSucceeded() {
-                        Log.d("SnapkitLogin", "Login was successful");
-                        getUserDetails();
-                    }
+            @Override
+            public void onLoginFailed() {
+                failureMessage(context.getString(R.string.failed_authenticate_please));
+                showLog("Login was unsuccessful");
+            }
 
-                    @Override
-                    public void onLoginFailed() {
-                        failureMessage(context.getString(R.string.failed_authenticate_please));
-                        Log.d("SnapkitLogin", "Login was unsuccessful");
-                    }
-
-                    @Override
-                    public void onLogout() {
-                        Log.d("SnapkitLogin", "User logged out");
-                    }
-                };
-
+            @Override
+            public void onLogout() {
+                showLog("User logged out");
+            }
+        };
         SnapLogin.getLoginStateController(context).addOnLoginStateChangedListener(mLoginStateChangedListener);
     }
 
@@ -306,14 +301,13 @@ public class SocialLogin {
                     socialResponse.setProviderType(ProviderType.SNAPCHAT);
                     socialResponse.setResponse(model);
 
-                    Log.d("SocialResponse ", socialResponse.toString());
                     loginCallback.socialLoginResponse(socialResponse);
                 }
 
                 @Override
                 public void onFailure(boolean isNetworkError, int statusCode) {
                     failureMessage(context.getString(R.string.failed_authenticate_please));
-                    Log.d("SnapkitLogin", "No user data fetched " + statusCode);
+                    showLog("No user data fetched " + statusCode);
                 }
             });
         }
@@ -365,9 +359,12 @@ public class SocialLogin {
 //    }
 
     private void failureMessage(String message) {
-        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
+    private void showLog(String message) {
+        Log.e(TAG, message);
+    }
 
     public interface SocialLoginCallback {
         void socialLoginResponse(SocialResponse<?> response);

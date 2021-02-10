@@ -16,4 +16,7 @@
     <string name="snap_chat_path_value" translatable="false">/snap_chat_path_value</string>
     <string name="snap_chat_scheme_value" translatable="false">snap_chat_scheme_value</string>
 
+    <!--google-->
+    <string name="default_web_client_id" translatable="false">default_web_client_id</string>
+
 </resources>
