@@ -62,10 +62,13 @@ public class SocialLogin {
 
     // Google
     private GoogleSignInClient mGoogleSignInClient;
+
     // Facebook Callback
     private static CallbackManager callbackManager;
+
     // Twitter AuthClient
     private static TwitterAuthClient twitterAuthClient;
+
     // SnapChat
     private MeData snapResult;
     private LoginStateController.OnLoginStateChangedListener mLoginStateChangedListener;
@@ -214,7 +217,6 @@ public class SocialLogin {
 
     private void googleInit() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(context.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(context, gso);
@@ -234,7 +236,7 @@ public class SocialLogin {
             SocialResponse<GoogleModel> socialResponse = new SocialResponse<>();
 
             socialResponse.setProviderType(ProviderType.GOOGLE);
-            socialResponse.setResponse(new Gson().fromJson(new Gson().toJson(account), new TypeToken<GoogleModel>() {
+            socialResponse.setResponse(new Gson().fromJson(account.zac(), new TypeToken<GoogleModel>() {
             }.getType()));
 
             loginCallback.socialLoginResponse(socialResponse);
@@ -244,12 +246,13 @@ public class SocialLogin {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCode class reference for more information.
             showLog("sign InResult:failed code =" + e.getStatusCode());
+        } catch (NullPointerException e) {
+            failureMessage(context.getString(R.string.failed_authenticate_please));
         }
     }
 
 
     //----------------------------------------- SnapChat -------------------------------------------
-
 
     public void snapChatLogin() {
         SnapLogin.getAuthTokenManager(context).startTokenGrant();
@@ -340,31 +343,17 @@ public class SocialLogin {
     }
 
 
-//    private static Bitmap getFacebookProfilePicture(String picLink) {
-//        Bitmap bitmap = null;
-//
-////            String link = "https://graph.facebook.com/" + userID + "/picture?type=large";
-//        if (android.os.Build.VERSION.SDK_INT > 8) {
-//            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-//                    .permitAll().build();
-//            StrictMode.setThreadPolicy(policy);
-//            try {
-//                URL imageURL = new URL(picLink);
-//                bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
-//            } catch (IOException ignored) {
-//            }
-//            return bitmap;
-//        } else
-//            return null;
-//    }
+    //----------------------------------------- Settings -------------------------------------------
 
     private void failureMessage(String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
+
     private void showLog(String message) {
-        Log.e(TAG, message);
+        Log.e(TAG, "Log " + message);
     }
+
 
     public interface SocialLoginCallback {
         void socialLoginResponse(SocialResponse<?> response);

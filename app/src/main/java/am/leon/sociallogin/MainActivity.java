@@ -42,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements SocialLogin.Socia
         socialLogin_google.setOnClickListener(v -> socialLogin.googleLogin());
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -73,4 +72,5 @@ public class MainActivity extends AppCompatActivity implements SocialLogin.Socia
                 break;
         }
     }
+
 }

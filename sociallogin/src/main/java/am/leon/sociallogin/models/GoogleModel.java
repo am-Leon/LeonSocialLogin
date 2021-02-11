@@ -1,6 +1,5 @@
 package am.leon.sociallogin.models;
 
-import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -8,36 +7,31 @@ import androidx.annotation.NonNull;
 
 public class GoogleModel implements Parcelable {
 
-    private int id;
-    private String tokenId;
+    private String id;
     private String email;
     private String displayName;
     private String givenName;
     private String familyName;
-    private Uri photoUrl;
-    private String serverAuthCode;
+    private String photoUrl;
+
 
     private GoogleModel(Parcel in) {
-        id = in.readInt();
-        tokenId = in.readString();
+        id = in.readString();
         email = in.readString();
         displayName = in.readString();
         givenName = in.readString();
         familyName = in.readString();
-        photoUrl = in.readParcelable(Uri.class.getClassLoader());
-        serverAuthCode = in.readString();
+        photoUrl = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(tokenId);
+        dest.writeString(id);
         dest.writeString(email);
         dest.writeString(displayName);
         dest.writeString(givenName);
         dest.writeString(familyName);
-        dest.writeParcelable(photoUrl, flags);
-        dest.writeString(serverAuthCode);
+        dest.writeString(photoUrl);
     }
 
     @Override
@@ -57,20 +51,12 @@ public class GoogleModel implements Parcelable {
         }
     };
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
-    }
-
-    public String getTokenId() {
-        return tokenId;
-    }
-
-    public void setTokenId(String tokenId) {
-        this.tokenId = tokenId;
     }
 
     public String getEmail() {
@@ -105,20 +91,12 @@ public class GoogleModel implements Parcelable {
         this.familyName = familyName;
     }
 
-    public Uri getPhotoUrl() {
+    public String getPhotoUrl() {
         return photoUrl;
     }
 
-    public void setPhotoUrl(Uri photoUrl) {
+    public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
-    }
-
-    public String getServerAuthCode() {
-        return serverAuthCode;
-    }
-
-    public void setServerAuthCode(String serverAuthCode) {
-        this.serverAuthCode = serverAuthCode;
     }
 
     @NonNull
@@ -126,13 +104,11 @@ public class GoogleModel implements Parcelable {
     public String toString() {
         return "GoogleModel{" +
                 "id=" + id +
-                ", tokenId='" + tokenId + '\'' +
                 ", email='" + email + '\'' +
                 ", displayName='" + displayName + '\'' +
                 ", givenName='" + givenName + '\'' +
                 ", familyName='" + familyName + '\'' +
                 ", photoUrl=" + photoUrl +
-                ", serverAuthCode='" + serverAuthCode + '\'' +
                 '}';
     }
 }
