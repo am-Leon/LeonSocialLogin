@@ -21,7 +21,7 @@ allprojects {
 
 ```groovy
 
-    implementation 'com.github.am-Leon:LeonSocialLogin:v1.1.0'
+    implementation 'com.github.am-Leon:LeonSocialLogin:v1.1.1'
 
 ```
 

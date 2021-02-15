@@ -113,7 +113,7 @@ public class SocialLogin {
                 showLog(e.getMessage());
             }
         });
-        LoginManager.getInstance().logInWithReadPermissions((Activity) context, SocialGlobalConst.getInstance().getFaceBookPermissions());
+        LoginManager.getInstance().logInWithReadPermissions((Activity) context, SocialGlobalConst.getInstance().getBasicFaceBookPermissions());
     }
 
 
@@ -129,7 +129,7 @@ public class SocialLogin {
         }));
 
         Bundle parameters = new Bundle();
-        parameters.putString("fields", SocialGlobalConst.getInstance().getFaceBookFields());
+        parameters.putString("fields", SocialGlobalConst.getInstance().getBasicFaceBookFields());
         request.setParameters(parameters);
         request.executeAsync();
     }
